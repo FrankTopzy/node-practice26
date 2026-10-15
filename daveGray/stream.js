@@ -8,4 +8,4 @@ const writeStream = fs.createWriteStream('./files/newLorem.txt');
   writeStream.write(dataChunk)
 })*/
 
-readStream.pipe(writeStream);
+readStream.pipe(writeStream); // dos the sae thing as the above code, but is more efficient and easier to read
