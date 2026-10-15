@@ -10,9 +10,9 @@ const fileOps = async () => {
     await fsPromise.unlink(path.join(__dirname, 'starter.txt'))
     await fsPromise.writeFile(path.join(__dirname, '', 'promiseWrite.txt'), data);
     await fsPromise.appendFile(path.join(__dirname, '', 'promiseWrite.txt'), '\n\nNice to meet you.');
-    await fsPromise.rename(path.join(__dirname, '', 'promiseWrite.txt'), path.join(__dirname, '', 'newPromiseWrite.txt'));
-    const newData = await fsPromise.readFile(path.join(__dirname, '', 'newPromiseWrite.txt'), 'utf8');
-    console.log(data);
+    await fsPromise.rename(path.join(__dirname, '', 'promiseWrite.txt'), path.join(__dirname, '', 'promisComplete.txt'));
+    const newData = await fsPromise.readFile(path.join(__dirname, '', 'promisComplete.txt'), 'utf8');
+    console.log(newData);
     
   } catch (error) {
     console.error(error);
