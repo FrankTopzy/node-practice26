@@ -1,3 +1,4 @@
+const { log } = require('console');
 const fs = require('fs');
 
 if (!fs.existsSync('./newDir')) {
