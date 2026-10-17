@@ -1,5 +1,7 @@
 import { createServer } from "node:http";
 
+const port = process.env.PORT ?? "3000";
+
 const server = createServer((req, res) => {
   if (req.method === "GET" && req.url === "/") {
     res.writeHead(200, {
@@ -22,6 +24,6 @@ const server = createServer((req, res) => {
   }));
 });
 
-server.listen(3000, () => {
+server.listen(port, () => {
   console.log("Server running at http://localhost:3000");
 });
