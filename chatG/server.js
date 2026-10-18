@@ -26,6 +26,20 @@ app.get("/users", (req, res) => {
   res.json(users);
 });
 
+app.get("/users/:id", (req, res) => {
+  const id = Number(req.params.id);
+
+  const user = users.find(user => user.id === id);
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found"
+    });
+  }
+
+  res.json(user);
+});
+
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
