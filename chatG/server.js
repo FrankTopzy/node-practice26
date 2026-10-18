@@ -1,29 +1,31 @@
-import { createServer } from "node:http";
+import express from "express";
 
-const port = process.env.PORT ?? "3000";
+const app = express();
+const PORT = 3000;
 
-const server = createServer((req, res) => {
-  if (req.method === "GET" && req.url === "/") {
-    res.writeHead(200, {
-      "Content-Type": "application/json"
-    });
+app.use(express.json());
 
-    res.end(JSON.stringify({
-      message: "Hello from Node.js"
-    }));
-
-    return;
+const users = [
+  {
+    id: 1,
+    name: "Frank",
+    email: "frank@example.com"
+  },
+  {
+    id: 2,
+    name: "Ada",
+    email: "ada@example.com"
   }
+];
 
-  res.writeHead(404, {
-    "Content-Type": "application/json"
-  });
-
-  res.end(JSON.stringify({
-    error: "Route not found"
-  }));
+app.get("/", (req, res) => {
+  res.json({ message: "Express API is running!" });
 });
 
-server.listen(port, () => {
-  console.log("Server running at http://localhost:3000");
+app.get("/users", (req, res) => {
+  res.json(users);
+});
+
+app.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
 });
