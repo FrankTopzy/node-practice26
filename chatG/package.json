@@ -17,5 +17,8 @@
   "bugs": {
     "url": "https://github.com/FrankTopzy/node-practice26/issues"
   },
-  "homepage": "https://github.com/FrankTopzy/node-practice26#readme"
+  "homepage": "https://github.com/FrankTopzy/node-practice26#readme",
+  "dependencies": {
+    "express": "^5.3.0"
+  }
 }
