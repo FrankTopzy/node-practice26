@@ -52,3 +52,5 @@
 18/10/2026	20:53:00	ca3fb10f-90f0-4b6e-8ff7-1e20bec4600c	/css/style.css	GET
 18/10/2026	20:53:05	f36b2f94-071a-4d97-92ac-5bec602017b5	///	GET
 18/10/2026	20:53:05	ed37d8ca-2dc3-42b2-89db-5702b4764b23	//css/style.css	GET
+18/10/2026	21:10:30	1dedf6a7-e820-4bc8-b597-5774feeddab2	/test	GET
+18/10/2026	21:10:30	0e8c5ea9-d276-4d52-8da4-38d4b598d2d6	/css/style.css	GET
