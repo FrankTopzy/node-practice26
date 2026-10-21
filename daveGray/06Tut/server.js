@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const app = express();
+const { logger } = require('./middleware/logEvents');
 const PORT = process.env.PORT || 3500;
 
 
@@ -9,6 +10,22 @@ app.get(/^\/$|\/index(\.html)?$/, (req, res) => {
   res.sendFile(path.join(__dirname, 'views', 'index.html'));
 });
 */
+
+//custom middleware logger
+app.use(logger);
+
+
+// built-in middleware to handle urlencoded data
+// in other words, form data:  
+// ‘content-type: application/x-www-form-urlencoded’
+app.use(express.urlencoded({ extended: false }));
+
+
+// built-in middleware for json 
+app.use(express.json());
+
+//server static files
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.get(['/', '/index{.html}'], (req, res) => {
   //res.sendFile('./viewa/index.html', {root: __dirname});
@@ -59,6 +76,14 @@ app.all('/{*splat}', (req, res) => {           // 404 handler goes last
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, 'views', '404.html'));
 });
+
+/*app.all('*', (req, res) => {
+  res.status(404);
+
+  if(res.accepts('html')) {
+    res.sendFile()
+  }
+})*/
 
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
