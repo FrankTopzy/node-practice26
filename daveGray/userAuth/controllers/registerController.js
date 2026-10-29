@@ -1,11 +1,11 @@
+const usersDB = {
+  users: require('../model/users.json'),
+  setUsers: function (data) {this.users = data}
+}   
+
 const fsPromises = require('fs').promises;
 const path = require('path');
 const bcrypt = require('bcrypt');
-
-const usersDB = {
-  users: require('../model/user.json'),
-  setUsers: function (data) {this.users = data}
-}
 
 const handleNewUser = async (req, res) => {
   const { user, pwd } = req.body;
@@ -14,9 +14,11 @@ const handleNewUser = async (req, res) => {
     return res.status(400).json({ 'message': 'Username and password are required.' });
   }
 
-  const duplicate = usersDB.users.find(user => user.username === user);
+  const duplicate = usersDB.users.find(person => person.username == user);
 
-  if (duplicate) return res.sendStatus(409); //conflict
+  if (duplicate) {
+    return res.sendStatus(409); //Conflict 
+  }
 
   try {
     const hashedpwd = await bcrypt.hash(pwd, 10);
