@@ -1,16 +1,19 @@
 const path = require('path');
 const express = require('express');
 const app = express();
-const cors = require('cors')
+const cors = require('cors');
 const PORT = process.env.PORT || 3500;
 const errorHandler = require('./middleware/errorHandler');
 const { logger } = require('./middleware/logEvents');
 const rootRouter = require('./routes/root');
-const corsOptions = require('./config/corsOption')
+const corsOptions = require('./config/corsOption');
 const verifyJWT = require('./middleware/verifyJWT');
 const cookieParser = require('cookie-parser');
+const credentials = require('./middleware/credentials');
 
 app.use(logger);
+
+app.use(credentials);
 
 app.use(cors(corsOptions));
 
