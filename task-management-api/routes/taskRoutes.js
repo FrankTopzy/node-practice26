@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllTasks, getTaskById, createTask, updateTask, deleteTask } from '../controllers/taskController.js';
+import { getAllTasks, getTaskById, createTask, updateTask, deleteTask, toggleTaskCompletion } from '../controllers/taskController.js';
 
 const router = express.Router();
 
@@ -12,6 +12,8 @@ router.route("/")
 router.route('/:id')
   .get(getTaskById)
   .put(updateTask)
-  .delete(deleteTask)
+  .delete(deleteTask);
+
+router.patch("/:id/complete", toggleTaskCompletion);
 
 export default router;
