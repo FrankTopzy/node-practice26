@@ -46,21 +46,54 @@ export const createTask = (req, res) => {
 
 export const updateTask = (req, res) => {
   const id = Number(req.params.id);
+  const { title, description, completed } = req.body  ?? {};
 
   if (!Number.isInteger(id) || id <= 0 ) {
     return res.status(400).json({ "message": "Invalid task id" });
   }
 
+  if (
+    typeof title !== 'string' ||
+     typeof description !== 'string' || 
+     typeof completed !== 'boolean' || 
+     !title.trim() || 
+     !description.trim()
+  ) return res.status(400).json({ "message": "Title, description and completion status are required." })
+
   const foundTask = Tasks.tasks.find(task => task.id === id);
 
-  if(!foundTask) return res.status(404).json({ "messge": "Task not found "})
+  if(!foundTask) return res.status(404).json({ "messge": "Task not found "});
 
-  if (req.body.title) foundTask.title = req.body.title;
-  if (req.body.description) foundTask.title = req.body.description
+  const updatedTask = {...foundTask, title: title.trim(), description: description.trim(), completed: completed}
 
-  Tasks.setTasks(Tasks.tasks.map(task => (task.id === id ? foundTask : task)));
+  Tasks.setTasks(Tasks.tasks.map(task => (task.id === id ? updatedTask : task)));
 
-  return res.status(200).json(foundTask)
+  return res.status(200).json(updatedTask)
+};
+
+export const toggleTaskCompletion = (req, res) => {
+  // 1. Get the ID from req.params.id
+  // 2. Convert and validate the ID
+  const id = Number(req.params.id);
+
+  if (!Number.isInteger(id) || id <= 0 ) {
+    return res.status(400).json({ "message": "Invalid task id" });
+  }
+
+  // 3. Find the task
+  const foundTask = Tasks.tasks.find(task => task.id === id);
+
+  // 4. Return 404 if it doesn't exist
+  if(!foundTask) return res.status(404).json({ "messge": "Task not found "});
+
+  // 5. Create an updated task with the opposite completed value
+  const updatedTask = {...foundTask, completed: !foundTask.completed}
+
+  // 6. Update Tasks.tasks immutably using map()
+  Tasks.setTasks(Tasks.tasks.map(task => (task.id === id ? updatedTask : task)));
+
+  // 7. Return the updated task with status 200
+  return res.status(200).json(updatedTask);
 };
 
 export const deleteTask = (req, res) => {
@@ -76,7 +109,7 @@ export const deleteTask = (req, res) => {
     return res.status(404).json({ "message": "Task not found." })
   }
 
-  const filteredTasks = Tasks.task(task => task.id !== foundTask.id);
+  const filteredTasks = Tasks.tasks.filter(task => task.id !== foundTask.id);
 
   Tasks.setTasks(filteredTasks);
 
