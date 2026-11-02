@@ -62,7 +62,7 @@ export const updateTask = (req, res) => {
 
   const foundTask = Tasks.tasks.find(task => task.id === id);
 
-  if(!foundTask) return res.status(404).json({ "messge": "Task not found "});
+  if(!foundTask) return res.status(404).json({ "message": "Task not found "});
 
   const updatedTask = {...foundTask, title: title.trim(), description: description.trim(), completed: completed}
 
@@ -84,7 +84,7 @@ export const toggleTaskCompletion = (req, res) => {
   const foundTask = Tasks.tasks.find(task => task.id === id);
 
   // 4. Return 404 if it doesn't exist
-  if(!foundTask) return res.status(404).json({ "messge": "Task not found "});
+  if(!foundTask) return res.status(404).json({ "message": "Task not found "});
 
   // 5. Create an updated task with the opposite completed value
   const updatedTask = {...foundTask, completed: !foundTask.completed}
@@ -113,7 +113,7 @@ export const deleteTask = (req, res) => {
 
   Tasks.setTasks(filteredTasks);
 
-  res.status(204).end();
+  return res.status(204).end();
 }
 
 export const getTaskById = (req, res) => {
