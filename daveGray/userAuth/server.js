@@ -1,3 +1,5 @@
+const swaggerUi = require("swagger-ui-express");
+const spec = require("./swagger");
 const dns = require('node:dns');
 dns.setServers(['8.8.8.8', '1.1.1.1']);
 
@@ -32,6 +34,9 @@ app.use(express.json());
 
 app.use(cookieParser());
 
+// Swagger docs page
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(spec));
+
 app.use('/', express.static(path.join(__dirname, '/public')));
 
 
@@ -42,8 +47,6 @@ app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 
-app.use(verifyJWT)
-app.use('/employees', require('./routes/api/employees'));
 
 app.all('/{*splat}',(req, res) => {
   res.status(404);
@@ -56,6 +59,8 @@ app.all('/{*splat}',(req, res) => {
     res.type('txt').send('404 Not Found');
   }
 });
+
+app.use('/employees', verifyJWT, require('./routes/api/employees'));
 
 
 app.use(errorHandler);
