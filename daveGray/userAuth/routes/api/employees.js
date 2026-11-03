@@ -4,6 +4,18 @@ const employeesControllers = require('../../controllers/employeesController');
 const ROLES_LIST = require('../../config/roles_list')
 const verifyRoles = require('../../middleware/verifyRoles');
 
+/**
+ * @openapi
+ * /employees:
+ *   get:
+ *     summary: List employees
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of employees
+ */
+
 router.route('/')
   .get(employeesControllers.getAllEmployees)
   .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), employeesControllers.createNewEmployee)
