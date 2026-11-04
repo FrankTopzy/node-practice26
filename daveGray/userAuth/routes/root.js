@@ -52,6 +52,7 @@ router.get('/new-page{.html}', (req, res) => {
 });
 
 
+
 /**
  * @openapi
  * /old-page.html:
