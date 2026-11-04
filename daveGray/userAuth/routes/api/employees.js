@@ -15,7 +15,6 @@ const verifyRoles = require('../../middleware/verifyRoles');
  *       200:
  *         description: Array of employees
  */
-
 router.route('/')
   .get(employeesControllers.getAllEmployees)
   .post(verifyRoles(ROLES_LIST.Admin, ROLES_LIST.Editor), employeesControllers.createNewEmployee)
