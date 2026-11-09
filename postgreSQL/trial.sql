@@ -42,5 +42,38 @@ CREATE TABLE task_tags (
     task_id INTEGER REFERENCES tasks(id),
     tag_id INTEGER REFERENCES tags(id),
 
-    PRIMARY KEY (task_id, tag_id)
+    PRIMARY KEY (task_id, tag_id) 
 );
+
+
+
+
+
+SELECT tasks.title, users.name FROM tasks INNER JOIN users ON tasks.user_id = users.id;
+
+
+
+SELECT users.name, tasks.title
+FROM users
+LEFT JOIN tasks
+ON users.id = tasks.user_id;
+
+
+
+SELECT users.name, tasks.title
+FROM users
+RIGHT JOIN tasks
+ON users.id = tasks.user_id;
+
+
+SELECT u.name, t.title
+FROM users AS u
+INNER JOIN tasks AS t
+ON u.id = t.user_id;
+
+
+SELECT users.name, tasks.title
+FROM tasks
+INNER JOIN users
+ON tasks.user_id = users.id
+WHERE users.name = 'Frank';
