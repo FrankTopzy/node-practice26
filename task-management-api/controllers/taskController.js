@@ -1,13 +1,13 @@
-import initialTasks from '../models/tasks.json' with {type: "json"};
+//import initialTasks from '../models/tasks.json' with {type: "json"};
 import pool from '../db_conn.js';
 
-const Tasks = {
+/*const Tasks = {
   tasks:[...initialTasks],
 
   setTasks(data) {
     this.tasks = data;
   }
-}
+}*/
 
 export const getAllTasks = async (req, res, next) => {
   try {
@@ -176,7 +176,32 @@ export const toggleTaskCompletion = async (req, res, next) => {
   return res.status(200).json(updatedTask);*/
 };
 
-export const deleteTask = (req, res) => {
+export const deleteTask = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({ message: "Invalid task ID" });
+    }
+
+    const result = await pool.query(
+      `DELETE FROM tasks
+       WHERE id = $1
+       RETURNING id`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Task not found." });
+    }
+
+    return res.status(204).end();
+
+  } catch (error) {
+    next(error);
+  }
+
+  /*
   const id = Number(req.params.id);
 
   if(!Number.isInteger(id) || id <= 0) {
@@ -193,7 +218,7 @@ export const deleteTask = (req, res) => {
 
   Tasks.setTasks(filteredTasks);
 
-  return res.status(204).end();
+  return res.status(204).end();*/
 }
 
 export const getTaskById = async (req, res, next) => {
