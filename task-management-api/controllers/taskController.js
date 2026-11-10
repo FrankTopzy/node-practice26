@@ -73,8 +73,37 @@ export const createTask = async (req, res, next) => {
 
 
 
-export const updateTask = (req, res) => {
-  const id = Number(req.params.id);
+export const updateTask = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+    const { title, description, completed } = req.body ?? {};
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({message: "Invalid task ID"})
+    }
+
+    if (typeof title !== 'string' ||
+      typeof description !== 'string' || 
+      typeof completed !== 'boolean' || 
+      !title.trim() || 
+      !description.trim()) {
+        res.status(400).json({ "message": "Title, description and completion status are required." });
+    }
+
+    const result = await pool.query(`
+      UPDATE tasks SET title = $1, description = $2, completed = $3 WHERE id = $4 RETURNING *
+    `, [title.trim(), description.trim(), completed, id])
+
+    if (result.rows.length === 0) return res.status(404).json({message: "Task not found."});
+
+    return res.status(200).json(result.rows[0]);
+
+  } catch (error) {
+    next(error);
+  }
+
+
+  /*const id = Number(req.params.id);
   const { title, description, completed } = req.body  ?? {};
 
   if (!Number.isInteger(id) || id <= 0 ) {
@@ -97,7 +126,7 @@ export const updateTask = (req, res) => {
 
   Tasks.setTasks(Tasks.tasks.map(task => (task.id === id ? updatedTask : task)));
 
-  return res.status(200).json(updatedTask)
+  return res.status(200).json(updatedTask)*/
 };
 
 
@@ -147,7 +176,7 @@ export const deleteTask = (req, res) => {
   return res.status(204).end();
 }
 
-export const getTaskById = (req, res) => {
+export const getTaskById = (req, res, next) => {
   // 1. Get ID from req.params.id
   // 2. Convert it to a number
   const id = Number(req.params.id);
@@ -164,5 +193,5 @@ export const getTaskById = (req, res) => {
   if(!foundTask) return res.status(404).json({ "message": "Task not found." });
 
   // 6. Return the task
-  return res.status(200).json(foundTask);
+  return res.status(200).json(foundTask); 
 };
