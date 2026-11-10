@@ -3,6 +3,16 @@ CREATE TABLE users (
     name VARCHAR(100)
 );
 
+
+CREATE TABLE tasks (
+	id SERIAL PRIMARY KEY,
+	title VARCHAR(255) NOT NULL,
+	completed BOOLEAN DEFAULT FALSE,
+	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+
 CREATE TABLE tasks (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255),
@@ -46,10 +56,16 @@ CREATE TABLE task_tags (
 );
 
 
+ALTER TABLE tasks ADD COLUMN description TEXT; /*TO ADD A NEW COLUMN*/
 
+
+ALTER TABLE tasks RENAME COLUMN created_at TO "createdAt"; /*Edit the title of an existing column*/
 
 
 SELECT tasks.title, users.name FROM tasks INNER JOIN users ON tasks.user_id = users.id;
+
+SELECT created_at AS "createdAt"
+FROM tasks;
 
 
 
@@ -57,6 +73,11 @@ SELECT users.name, tasks.title
 FROM users
 LEFT JOIN tasks
 ON users.id = tasks.user_id;
+
+SELECT column_name, data_type
+FROM information_schema.columns
+WHERE table_name = 'tasks'
+ORDER BY ordinal_position;
 
 
 
@@ -77,3 +98,5 @@ FROM tasks
 INNER JOIN users
 ON tasks.user_id = users.id
 WHERE users.name = 'Frank';
+
+
