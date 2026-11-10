@@ -22,9 +22,27 @@ export const getAllTasks = async (req, res, next) => {
   }
 };
 
-export const createTask = (req, res) => {
+
+
+export const createTask = async (req, res, next) => {
+  try {
+    const { title, description } = req.body ?? {};
+
+    if (typeof title !== 'string' || typeof description !== 'string' || !title.trim() || !description.trim()) {
+      return res.status(400).json({ "message": "Title and description required." })
+    }
+
+    const result = await pool.query(`
+      INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *
+    `, [title.trim(), description.trim()]);
+
+    res.status(201).json(result.rows[0]);
+  } catch (error) {
+    next(error)
+  }
+
   // 1. Extract title and description from req.body
-  const { title, description } = req.body ?? {};
+  /*const { title, description } = req.body ?? {};
   const date = new Date().toISOString();
 
   // 2. Validate both fields
@@ -50,8 +68,10 @@ export const createTask = (req, res) => {
   Tasks.setTasks([...Tasks.tasks, newTask]);
 
   // 6. Return status 201 and the new task
-  return res.status(201).json(newTask)
+  return res.status(201).json(newTask)*/
 };
+
+
 
 export const updateTask = (req, res) => {
   const id = Number(req.params.id);
@@ -79,6 +99,8 @@ export const updateTask = (req, res) => {
 
   return res.status(200).json(updatedTask)
 };
+
+
 
 export const toggleTaskCompletion = (req, res) => {
   // 1. Get the ID from req.params.id
