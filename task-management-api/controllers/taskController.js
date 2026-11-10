@@ -131,7 +131,27 @@ export const updateTask = async (req, res, next) => {
 
 
 
-export const toggleTaskCompletion = (req, res) => {
+export const toggleTaskCompletion = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0 ) {
+      return res.status(400).json({ "message": "Invalid task id" });
+    }
+
+    const result = await pool.query(`
+      UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *
+    `, [id])
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Task not found." });
+    }
+
+    return res.status(200).json(result.rows[0]);
+  } catch (error) {
+    next(error)
+  }
+  /*
   // 1. Get the ID from req.params.id
   // 2. Convert and validate the ID
   const id = Number(req.params.id);
@@ -153,7 +173,7 @@ export const toggleTaskCompletion = (req, res) => {
   Tasks.setTasks(Tasks.tasks.map(task => (task.id === id ? updatedTask : task)));
 
   // 7. Return the updated task with status 200
-  return res.status(200).json(updatedTask);
+  return res.status(200).json(updatedTask);*/
 };
 
 export const deleteTask = (req, res) => {
