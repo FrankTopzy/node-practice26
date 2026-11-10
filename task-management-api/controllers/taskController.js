@@ -176,7 +176,29 @@ export const deleteTask = (req, res) => {
   return res.status(204).end();
 }
 
-export const getTaskById = (req, res, next) => {
+export const getTaskById = async (req, res, next) => {
+  try {
+    const id = Number(req.params.id);
+
+    if (!Number.isInteger(id) || id <= 0) {
+      return res.status(400).json({message: "Invalid task ID"});
+    }
+
+    const result = await pool.query(`
+      SELECT id, title, description, completed, "createdAt" FROM tasks WHERE id = $1
+    `, [id])
+
+    if (result.rows.length === 0 ) {
+      return res.status(404).json({message: "Task not found."});
+    }
+
+    return res.status(200).json(result.rows[0]);
+
+  }  catch (error) {
+    next(error)
+  }
+
+  /*
   // 1. Get ID from req.params.id
   // 2. Convert it to a number
   const id = Number(req.params.id);
@@ -193,5 +215,5 @@ export const getTaskById = (req, res, next) => {
   if(!foundTask) return res.status(404).json({ "message": "Task not found." });
 
   // 6. Return the task
-  return res.status(200).json(foundTask); 
+  return res.status(200).json(foundTask); */
 };
