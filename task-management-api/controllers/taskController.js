@@ -1,4 +1,5 @@
 import initialTasks from '../models/tasks.json' with {type: "json"};
+import pool from '../db_conn.js';
 
 const Tasks = {
   tasks:[...initialTasks],
@@ -8,9 +9,17 @@ const Tasks = {
   }
 }
 
-export const getAllTasks = (req, res) => {
-  // Return all tasks
-  res.json(Tasks.tasks);
+export const getAllTasks = async (req, res, next) => {
+  try {
+    const result = await pool.query(`
+      SELECT id, title, description, completed, "createdAt" FROM tasks ORDER BY id
+    `);
+
+      // Return all tasks
+    res.status(200).json(result.rows);
+  } catch (error) {
+    next(error)
+  }
 };
 
 export const createTask = (req, res) => {
