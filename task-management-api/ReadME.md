@@ -1,0 +1,8 @@
+
+
+//TO INSTALL PRISMA
+npm i -D prisma@7
+
+//TO INSTALL POSGRESQL PACKAGE
+nmp i pg
+
