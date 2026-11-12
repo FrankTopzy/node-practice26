@@ -89,7 +89,7 @@ export const updateTask = async (req, res, next) => {
       typeof completed !== 'boolean' || 
       !title.trim() || 
       !description.trim()) {
-        res.status(400).json({ "message": "Title, description and completion status are required." });
+        return res.status(400).json({ "message": "Title, description and completion status are required." });
     }
 
     const result = await pool.query(`
