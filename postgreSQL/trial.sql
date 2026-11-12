@@ -100,3 +100,14 @@ ON tasks.user_id = users.id
 WHERE users.name = 'Frank';
 
 
+SELECT
+    id,
+    title,
+    (
+        SELECT name
+        FROM users
+        WHERE users.id = tasks.user_id
+    ) AS owner
+FROM tasks;
+
+
