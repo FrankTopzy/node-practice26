@@ -15,6 +15,8 @@ export const getAllTasks = async (req, res, next) => {
       SELECT id, title, description, completed, "createdAt" FROM tasks ORDER BY id
     `);
 
+    console.log(req.method, req.headers.origin, req.url);
+
       // Return all tasks
     res.status(200).json(result.rows);
   } catch (error) {
