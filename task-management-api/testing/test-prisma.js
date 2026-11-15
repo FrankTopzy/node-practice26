@@ -1,15 +1,13 @@
 import prisma from '../prisma_db.js';
 
 try {
-  const tasks = await prisma.tasks.findMany({
-    select: {
-      title: true,
-      completed: true
+  const task = await prisma.tasks.findUnique({
+    where: {
+      id: 4
     }
   });
 
-  console.log(tasks);;
-
+  console.log('Task found:', task);
 
   console.log('Users retrieved successfully:');
 } catch (error) {
