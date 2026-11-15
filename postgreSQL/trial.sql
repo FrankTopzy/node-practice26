@@ -111,3 +111,127 @@ SELECT
 FROM tasks;
 
 
+/*PRISMA*/
+const users = await prisma.users.findMany();
+
+
+const user = await prisma.users.findUnique({
+  where: {
+    id: 1
+  }
+});
+
+
+
+const tasks = await prisma.tasks.findMany({
+  where: {
+    completed: true
+  }
+});
+
+
+
+const tasks = await prisma.tasks.findMany({
+  where: {
+    completed: true,
+    user_id: 1
+  }
+});
+
+
+const tasks = await prisma.tasks.findMany({
+  select: {
+    title: true,
+    completed: true
+  }
+});
+
+
+const tasks = await prisma.tasks.findMany({
+  where: {
+    title: {
+      contains: 'Express'
+    }
+  }
+});
+
+/*One useful detail: PostgreSQL string matching with Prisma's contains is case-sensitive by default. You can make it case-insensitive with mode: 'insensitive'.*/
+const tasks = await prisma.tasks.findMany({
+  where: {
+    title: {
+      contains: 'express',
+      mode: 'insensitive'
+    }
+  }
+});
+
+
+const tasks = await prisma.tasks.findMany({
+  where: {
+    OR: [
+      { completed: true },
+      { user_id: 2 }
+    ]
+  }
+});
+
+
+const tasks = await prisma.tasks.findMany({
+  orderBy: {
+    id: 'desc'
+  }
+});
+
+
+const tasks = await prisma.tasks.findMany({
+  orderBy: {
+    id: 'desc'
+  },
+  take: 2
+});
+
+
+const tasks = await prisma.tasks.findMany({
+  orderBy: {
+    id: 'asc'
+  },
+  skip: 1,
+  take: 2
+});
+
+
+/*Creating a record with Prisma*/
+const newTask = await prisma.tasks.create({
+  data: {
+    title: 'Learn Prisma',
+    description: 'Practice Prisma CRUD operations',
+    completed: false,
+    user_id: 1
+  }
+});
+
+
+
+const updatedTask = await prisma.tasks.update({
+  where: {
+    id: 4
+  },
+  data: {
+    completed: true
+  }
+});
+
+
+const deletedTask = await prisma.tasks.delete({
+  where: {
+    id: 4
+  }
+});
+
+
+const user = await prisma.users.findUnique({
+  where: { id: 1 },
+  include: {
+    tasks: true
+  }
+});
