@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "tasks" ADD COLUMN     "priority" VARCHAR(20) NOT NULL DEFAULT 'normal';
