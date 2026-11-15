@@ -1,5 +1,6 @@
 //import initialTasks from '../models/tasks.json' with {type: "json"};
-import pool from '../db_conn.js';
+//import pool from '../db_conn.js';
+import prisma from '../prisma_db.js';
 
 /*const Tasks = {
   tasks:[...initialTasks],
@@ -11,14 +12,16 @@ import pool from '../db_conn.js';
 
 export const getAllTasks = async (req, res, next) => {
   try {
-    const result = await pool.query(`
-      SELECT id, title, description, completed, "createdAt" FROM tasks ORDER BY id
-    `);
+    const tasks = await prisma.tasks.findMany({
+      orderBy: {
+        id: 'asc'
+      }
+    });
 
-    console.log(req.method, req.headers.origin, req.url);
+    //console.log(req.method, req.headers.origin, req.url);
 
       // Return all tasks
-    res.status(200).json(result.rows);
+    res.status(200).json(tasks);
   } catch (error) {
     next(error)
   }
@@ -34,11 +37,14 @@ export const createTask = async (req, res, next) => {
       return res.status(400).json({ "message": "Title and description required." })
     }
 
-    const result = await pool.query(`
-      INSERT INTO tasks (title, description) VALUES ($1, $2) RETURNING *
-    `, [title.trim(), description.trim()]);
+    const task = await prisma.tasks.create({
+      data: {
+        title: title.trim(),
+        description: description.trim(),
+      }
+    })
 
-    res.status(201).json(result.rows[0]);
+    res.status(201).json(task);
   } catch (error) {
     next(error)
   }
@@ -92,15 +98,22 @@ export const updateTask = async (req, res, next) => {
         return res.status(400).json({ "message": "Title, description and completion status are required." });
     }
 
-    const result = await pool.query(`
-      UPDATE tasks SET title = $1, description = $2, completed = $3 WHERE id = $4 RETURNING *
-    `, [title.trim(), description.trim(), completed, id])
+    const updatedTask = await prisma.tasks.update({
+      where: { id },
+      data: {
+        title: title.trim(),
+        description: description.trim(),
+        completed
+      }
+    })
 
-    if (result.rows.length === 0) return res.status(404).json({message: "Task not found."});
-
-    return res.status(200).json(result.rows[0]);
+    return res.status(200).json(updatedTask);
 
   } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Task not found.' });
+    }
+
     next(error);
   }
 
@@ -141,15 +154,22 @@ export const toggleTaskCompletion = async (req, res, next) => {
       return res.status(400).json({ "message": "Invalid task id" });
     }
 
-    const result = await pool.query(`
-      UPDATE tasks SET completed = NOT completed WHERE id = $1 RETURNING *
-    `, [id])
+    const task = await prisma.tasks.findUnique({
+      where: { id }
+    });
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Task not found." });
+    if (!task) {
+      return res.status(404).json({ message: 'Task not found.' });
     }
 
-    return res.status(200).json(result.rows[0]);
+    const updatedTask = await prisma.tasks.update({
+      where: { id },
+      data: {
+        completed: !task.completed
+      }
+    });
+
+    return res.status(200).json(updatedTask);
   } catch (error) {
     next(error)
   }
@@ -186,20 +206,17 @@ export const deleteTask = async (req, res, next) => {
       return res.status(400).json({ message: "Invalid task ID" });
     }
 
-    const result = await pool.query(
-      `DELETE FROM tasks
-       WHERE id = $1
-       RETURNING id`,
-      [id]
-    );
-
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: "Task not found." });
-    }
+    await prisma.tasks.delete({
+      where: { id }
+    });
 
     return res.status(204).end();
 
   } catch (error) {
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: 'Task not found.' });
+    }
+
     next(error);
   }
 
@@ -231,15 +248,17 @@ export const getTaskById = async (req, res, next) => {
       return res.status(400).json({message: "Invalid task ID"});
     }
 
-    const result = await pool.query(`
-      SELECT id, title, description, completed, "createdAt" FROM tasks WHERE id = $1
-    `, [id])
+    const task = await prisma.tasks.findUnique({
+      where: { id }
+    });
 
-    if (result.rows.length === 0 ) {
-      return res.status(404).json({message: "Task not found."});
+    if (!task) {
+      return res.status(404).json({
+        message: 'Task not found.'
+      });
     }
 
-    return res.status(200).json(result.rows[0]);
+    return res.status(200).json(task);
 
   }  catch (error) {
     next(error)
