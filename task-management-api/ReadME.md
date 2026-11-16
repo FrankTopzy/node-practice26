@@ -25,6 +25,14 @@ Get-Content prisma7.config.ts
 Get-Content prisma/schema.prisma
 
 
+Select-String -Path prisma/migrations/0_init/migration.sql -Pattern 'email'
+
+
+Get-Content prisma/migrations/0_init/migration.sql | Select-Object -Last 15
+
+Get-FileHash prisma/migrations/0_init/migration.sql -Algorithm SHA256
+
+
 datasource: {
   url: `postgresql://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_HOST}:${process.env.DB_PORT}/${process.env.DB_NAME}?schema=public`,
 },
@@ -34,3 +42,24 @@ npx prisma db pull
 
 //Generate Prisma Client
 npx prisma generate
+
+
+
+
+
+
+npx prisma db pull	Reads the existing database and updates your Prisma schema.
+
+
+
+npx prisma migrate dev	//Creates and applies newmigrations during development.
+New-Item -ItemType Directory -Path prisma/migrations //to creade a new path or folder
+New-Item -ItemType Directory -Path prisma/migrations/0_init //The 0_ prefix ensures this baseline comes before future migrations in Prisma's migration order.
+npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script --output prisma/migrations/0_init/migration.sql
+npx prisma migrate resolve --applied 0_init
+npx prisma migrate status
+npx prisma migrate dev --name add_task_priority
+
+
+
+npx prisma migrate deploy	Applies existing migrations in production.
