@@ -1,13 +1,14 @@
 import prisma from '../prisma_db.js';
 
 try {
-  const task = await prisma.tasks.findUnique({
+  const user = await prisma.users.findUnique({
     where: {
-      id: 4
+      email: 'rollback@example.com'
     }
   });
 
-  console.log('Task found:', task);
+  console.log('Rollback test user:', user);
+  //console.dir(users, { depth: null });
 
   console.log('Users retrieved successfully:');
 } catch (error) {
