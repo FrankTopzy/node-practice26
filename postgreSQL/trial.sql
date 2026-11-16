@@ -79,6 +79,26 @@ FROM information_schema.columns
 WHERE table_name = 'tasks'
 ORDER BY ordinal_position;
 
+SELECT
+    column_name,
+    data_type,
+    character_maximum_length
+FROM information_schema.columns
+WHERE table_name = 'users'
+AND column_name = 'email';
+
+SELECT checksum AS stored_checksum
+FROM "_prisma_migrations"
+WHERE migration_name = '0_init';
+
+UPDATE "_prisma_migrations"
+SET checksum = 'a3874c5c0bb4c770a9e4f053c2eedc1636d242cbc2e5aa10871b3b4178e5a2a9'
+WHERE migration_name = '0_init'
+AND checksum = '6370548c1ef02762b4d8a1e8d5f69073043f2e3589a3735cffc89acaeb17c768'
+AND finished_at IS NOT NULL
+AND rolled_back_at IS NULL
+RETURNING migration_name, checksum;
+
 
 
 SELECT users.name, tasks.title
@@ -235,3 +255,171 @@ const user = await prisma.users.findUnique({
     tasks: true
   }
 });
+
+const user = await prisma.users.findUnique({
+  where: { id: 2 },
+  include: {
+    tasks: true
+  }
+});
+
+const user = await prisma.users.findUnique({
+  where: { id: 2 },
+  include: {
+    tasks: {
+      where: {
+        completed: true
+      }
+    }
+  }
+});
+
+
+include: {
+  tasks: {
+    select: {
+      id: true,
+      title: true
+    }
+  }
+}
+
+const user = await prisma.users.findUnique({
+    where: { id: 1 },
+    include: {
+      tasks: {
+        where: {
+          completed: false
+        },
+        select: {
+          id: true,
+          title: true
+        },
+        orderBy: { id: 'desc' }
+      }
+    }
+  });
+  
+
+  const users = await prisma.users.findMany({
+  where: {
+    tasks: {
+      some: {
+        completed: false
+      }
+    }
+  }
+});
+
+
+/*some: { completed: true } → at least one completed task exists.
+
+
+
+every: { completed: true } → every task is completed.
+
+
+
+none: { completed: true } → no completed tasks exist.*/
+
+
+const users = await prisma.users.findMany({
+  where: {
+    tasks: {
+      some: {
+        completed: true
+      }
+    }
+  },
+  include: {
+    tasks: {
+      where: {
+        completed: true
+      }
+    }
+  }
+});
+
+const totalTasks = await prisma.tasks.count();
+
+console.log(totalTasks);
+
+
+const completedTasks = await prisma.tasks.count({
+  where: {
+    completed: true
+  }
+});
+
+console.log(completedTasks);
+
+
+const incompleteTasks = await prisma.tasks.count({
+  where: {
+    completed: false,
+    user_id: 2
+  }
+});
+
+const result = await prisma.tasks.aggregate({
+  _max: {
+    id: true
+  }
+});
+
+console.log(result);
+
+/*Prisma's aggregate() can calculate values such as:
+- _count — number of records.
+- _avg — average.
+- _sum — total.
+- _min — minimum.
+- _max — maximum.*/
+
+const result = await prisma.tasks.groupBy({
+  by: ['completed'],
+  _count: {
+    id: true
+  }
+});
+
+const taskGroups = await prisma.tasks.groupBy({
+  by: ['user_id'],
+  _count: {
+    id: true
+  },
+  having: {
+    id: {
+      _count: {
+        gte: 2
+      }
+    }
+  }
+});
+
+
+
+const result = await prisma.$transaction(async (tx) => {
+  const user = await tx.users.create({
+    data: {
+      name: 'David',
+      email: 'david@example.com'
+    }
+  });
+
+  const task = await tx.tasks.create({
+    data: {
+      title: 'Learn Prisma',
+      description: 'Understand transactions',
+      user_id: user.id
+    }
+  });
+
+  return { user, task };
+});
+
+/*Transactions follow the ACID principles:
+- Atomicity: All operations succeed or none do.
+- Consistency: The database remains valid.
+- Isolation: Concurrent transactions are kept appropriately separate.
+- Durability: Committed changes persist.*/
