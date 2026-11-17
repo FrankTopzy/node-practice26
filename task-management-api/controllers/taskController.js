@@ -12,9 +12,14 @@ import prisma from '../prisma_db.js';
 
 export const getAllTasks = async (req, res, next) => {
   try {
-    const tasks = await prisma.tasks.findMany({
+   const { completed } = req.validatedQuery;
+
+   const tasks = await prisma.tasks.findMany({
+      where: completed !== undefined
+        ? { completed }
+        : {},
       orderBy: {
-        id: 'asc'
+        id: "asc"
       }
     });
 
@@ -83,35 +88,27 @@ export const createTask = async (req, res, next) => {
 
 export const updateTask = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-    const { title, description, completed } = req.body ?? {};
+    const id = req.params.id;
 
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({message: "Invalid task ID"})
-    }
-
-    if (typeof title !== 'string' ||
-      typeof description !== 'string' || 
-      typeof completed !== 'boolean' || 
-      !title.trim() || 
-      !description.trim()) {
-        return res.status(400).json({ "message": "Title, description and completion status are required." });
-    }
+    const { title, description, completed, priority } = req.body;
 
     const updatedTask = await prisma.tasks.update({
       where: { id },
       data: {
-        title: title.trim(),
-        description: description.trim(),
-        completed
+        ...(title !== undefined && { title }),
+        ...(description !== undefined && { description }),
+        ...(completed !== undefined && { completed }),
+        ...(priority !== undefined && { priority })
       }
-    })
+    });
 
     return res.status(200).json(updatedTask);
 
   } catch (error) {
-    if (error.code === 'P2025') {
-      return res.status(404).json({ message: 'Task not found.' });
+    if (error.code === "P2025") {
+      return res.status(404).json({
+        message: "Task not found."
+      });
     }
 
     next(error);
@@ -148,11 +145,7 @@ export const updateTask = async (req, res, next) => {
 
 export const toggleTaskCompletion = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0 ) {
-      return res.status(400).json({ "message": "Invalid task id" });
-    }
+    const id = req.params.id;
 
     const task = await prisma.tasks.findUnique({
       where: { id }
@@ -165,7 +158,7 @@ export const toggleTaskCompletion = async (req, res, next) => {
     const updatedTask = await prisma.tasks.update({
       where: { id },
       data: {
-        completed: !task.completed
+        completed: !Boolean(task.completed)
       }
     });
 
@@ -200,11 +193,7 @@ export const toggleTaskCompletion = async (req, res, next) => {
 
 export const deleteTask = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({ message: "Invalid task ID" });
-    }
+    const id = req.params.id;
 
     await prisma.tasks.delete({
       where: { id }
@@ -242,11 +231,7 @@ export const deleteTask = async (req, res, next) => {
 
 export const getTaskById = async (req, res, next) => {
   try {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({message: "Invalid task ID"});
-    }
+    const id = req.params.id;
 
     const task = await prisma.tasks.findUnique({
       where: { id }
