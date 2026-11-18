@@ -58,8 +58,16 @@ New-Item -ItemType Directory -Path prisma/migrations/0_init //The 0_ prefix ensu
 npx prisma migrate diff --from-empty --to-schema prisma/schema.prisma --script --output prisma/migrations/0_init/migration.sql
 npx prisma migrate resolve --applied 0_init
 npx prisma migrate status
+npx prisma migrate dev --create-only --name add-user-password
 npx prisma migrate dev --name add_task_priority
 
 
 
 npx prisma migrate deploy	Applies existing migrations in production.
+
+
+
+
+
+//generate a strong random secret key instead of inventing one.
+node --input-type=module -e "import { randomBytes } from 'node:crypto'; console.log(randomBytes(64).toString('hex'))"
