@@ -1,5 +1,6 @@
 import express from 'express';
 import validate from "../middlewares/validate.js";
+import authenticate from "../middlewares/authenticate.js";
 import {
   createTaskSchema,
   updateTaskSchema,
@@ -12,12 +13,12 @@ const router = express.Router();
 
 
 router.route("/")
-  .get(validate(taskQuerySchema, "query"), getAllTasks)
-  .post(validate(createTaskSchema), createTask)
+  .get(authenticate, validate(taskQuerySchema, "query"), getAllTasks)
+  .post(authenticate, validate(createTaskSchema), createTask)
   
 
 router.route('/:id')
-  .get(validate(taskIdSchema, "params"), getTaskById)
+  .get(authenticate, validate(taskIdSchema, "params"), getTaskById)
   .put(
     validate(taskIdSchema, "params"), 
     validate(updateTaskSchema), 
