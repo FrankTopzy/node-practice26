@@ -50,12 +50,15 @@ export const createTask = async (req, res, next) => {
 
 export const updateTask = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const id = Number(req.params.id);
 
     const { title, description, completed, priority } = req.body;
 
     const updatedTask = await prisma.tasks.update({
-      where: { id },
+      where: { 
+        id,
+        user_id: req.user.id
+      },
       data: {
         ...(title !== undefined && { title }),
         ...(description !== undefined && { description }),
@@ -81,10 +84,13 @@ export const updateTask = async (req, res, next) => {
 
 export const toggleTaskCompletion = async (req, res, next) => {
   try {
-    const id = req.params.id;
+    const id = Number(req.params.id);
 
     const task = await prisma.tasks.findUnique({
-      where: { id }
+      where: {
+        id,
+        user_id: req.user.id
+      }
     });
 
     if (!task) {
@@ -92,7 +98,10 @@ export const toggleTaskCompletion = async (req, res, next) => {
     }
 
     const updatedTask = await prisma.tasks.update({
-      where: { id },
+      where: {
+        id,
+        user_id: req.user.id,
+      },
       data: {
         completed: !Boolean(task.completed)
       }
@@ -108,9 +117,18 @@ export const deleteTask = async (req, res, next) => {
   try {
     const id = req.params.id;
 
-    await prisma.tasks.delete({
-      where: { id }
+    const deletedTask = await prisma.tasks.deleteMany({
+      where: {
+        id,
+        user_id: req.user.id
+      }
     });
+
+    if (deletedTask.count === 0) {
+      return res.status(404).json({
+        message: "Task not found."
+      });
+    }
 
     return res.status(204).end();
 
