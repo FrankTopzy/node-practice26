@@ -20,11 +20,12 @@ router.route("/")
 router.route('/:id')
   .get(authenticate, validate(taskIdSchema, "params"), getTaskById)
   .put(
+    authenticate,
     validate(taskIdSchema, "params"), 
     validate(updateTaskSchema), 
     updateTask)
-  .delete(validate(taskIdSchema, "params"), deleteTask);
+  .delete(authenticate, validate(taskIdSchema, "params"), deleteTask);
 
-router.patch("/:id/complete", validate(taskIdSchema, "params"), toggleTaskCompletion);
+router.patch("/:id/complete", authenticate, validate(taskIdSchema, "params"), toggleTaskCompletion);
 
 export default router;
