@@ -1,4 +1,4 @@
-const verifyRoles = (...allowedRoles ) => {
+const verifyRoles = ( ...allowedRoles ) => { // e.g allowedRoles = ['Admin', 'Editor']
   return (req, res, next) => {
     if (!req?.roles) return res.sendStatus(401);
 
