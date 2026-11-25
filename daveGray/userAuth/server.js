@@ -47,6 +47,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/refresh', require('./routes/refresh'));
 app.use('/logout', require('./routes/logout'));
 
+app.use('/employees', verifyJWT, require('./routes/api/employees'));
 
 app.all('/{*splat}',(req, res) => {
   res.status(404);
@@ -59,8 +60,6 @@ app.all('/{*splat}',(req, res) => {
     res.type('txt').send('404 Not Found');
   }
 });
-
-app.use('/employees', verifyJWT, require('./routes/api/employees'));
 
 
 app.use(errorHandler);
