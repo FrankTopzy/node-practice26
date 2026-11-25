@@ -3,13 +3,13 @@ const Employee = require('../model/Employee')
 const getAllEmployees = async (req, res) => {
   const employees = await Employee.find();
 
-  if (!employees) return res.status(204).json({ 'message': 'No employees found.' });
+  if (!employees) return res.status(204).json({ 'message': 'No employee found.' });
 
   res.json(employees);
 };
 
 const createNewEmployee = async (req, res) => {
-  if (!req?.body?.firstname || !req?.body?.lastname) return res.status(400).json({'message': 'First and last names are required'});
+  if (!req.body?.firstname || !req.body?.lastname) return res.status(400).json({'message': 'First and last names are required'});
 
   try{
     const result = await Employee.create({
@@ -24,7 +24,7 @@ const createNewEmployee = async (req, res) => {
 }
 
 const updateEmployee = async (req, res) => {
-   if (!req?.body?.id) return res.status(400).json({'message': 'First and last names are required'});
+   if (!req.body?.id) return res.status(400).json({'message': 'First and last names are required'});
 
    const employee = await Employee.findOne({_id: req.body.id}).exec();
 
@@ -41,7 +41,7 @@ const updateEmployee = async (req, res) => {
 }
 
 const deleteEmployee = async (req, res) => {
-  if (!req?.body?.id) return res.status(400).json({'message': 'First and last names are required'});
+  if (!req.body?.id) return res.status(400).json({'message': 'First and last names are required'});
 
    const employee = await Employee.findOne({_id: req.body.id}).exec();
 
@@ -55,7 +55,7 @@ const deleteEmployee = async (req, res) => {
 }
 
 const getEmployee = async (req, res) => {
-  if (!req?.params?.id) return res.status(400).json({'message': 'First and last names are required'});
+  if (!req.params?.id) return res.status(400).json({'message': 'First and last names are required'});
 
   const employee = await Employee.findOne({_id: req.params.id}).exec();
 
