@@ -46,7 +46,13 @@ export const registerUser = async (req, res, next) => {
     });
 
   } catch (error) {
-    next(error);
+      if (error.code === "P2002") {
+        return res.status(409).json({
+          message: "Email already registered."
+        });
+      }
+
+      next(error);
   }
 };
 
@@ -320,6 +326,13 @@ export const logoutUser = async (req, res, next) => {
 
     // Clear the refresh-token cookie
     res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/users"
+    });
+
+    res.clearCookie("csrfToken", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
