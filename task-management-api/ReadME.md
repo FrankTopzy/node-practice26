@@ -1,4 +1,7 @@
 
+node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+
+npm install express-rate-limit
 
 //TO INSTALL POSGRESQL PACKAGE
 nmp i pg
